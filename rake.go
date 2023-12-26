@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-//IsNumber returns true if the supplied string is a number
+// IsNumber returns true if the supplied string is a number
 func IsNumber(str string) bool {
-	if strings.Contains(str, ".") { //deal with float
+	if strings.Contains(str, ".") { // deal with float
 		if _, err := strconv.ParseFloat(str, 32); err != nil {
 			return false
 		}
-	} else { //deal with int
+	} else { // deal with int
 		if _, err := strconv.ParseInt(str, 10, 32); err != nil {
 			return false
 		}
@@ -42,7 +42,7 @@ func SplitSentences(text string) []string {
 	return strings.Split(splitText, "\n")
 }
 
-//GenerateCandidateKeywords returns a slice of candidate keywords from a slice of sentences and a stop-words regex
+// GenerateCandidateKeywords returns a slice of candidate keywords from a slice of sentences and a stop-words regex
 func GenerateCandidateKeywords(sentenceList []string, stopWordPattern *regexp.Regexp) []string {
 	phraseList := []string{}
 
@@ -103,7 +103,7 @@ func CalculateWordScores(phraseList []string) map[string]float64 {
 	return wordScore
 }
 
-//GenerateCandidateKeywordScores returns a map of (string,float64) that contains keywords and their score in the text
+// GenerateCandidateKeywordScores returns a map of (string,float64) that contains keywords and their score in the text
 func GenerateCandidateKeywordScores(phraseList []string, wordScore map[string]float64) map[string]float64 {
 	keywordCandidates := map[string]float64{}
 
@@ -122,8 +122,8 @@ func GenerateCandidateKeywordScores(phraseList []string, wordScore map[string]fl
 	return keywordCandidates
 }
 
-//SetDefaultStringInt is a util function that serves as a Go replacement for Python's `setDefault`: https://docs.python.org/2/library/stdtypes.html#dict.setdefault
-//Basically, if key is in the dictionary, return its value. If not, insert key with a value of default and return default. default defaults to None.
+// SetDefaultStringInt is a util function that serves as a Go replacement for Python's `setDefault`: https://docs.python.org/2/library/stdtypes.html#dict.setdefault
+// Basically, if key is in the dictionary, return its value. If not, insert key with a value of default and return default. default defaults to None.
 func SetDefaultStringInt(h map[string]int, k string, v int) (set bool, r int) {
 	if r, set = h[k]; !set {
 		h[k] = v
@@ -133,8 +133,8 @@ func SetDefaultStringInt(h map[string]int, k string, v int) (set bool, r int) {
 	return
 }
 
-//SetDefaultStringFloat64 is a util function that serves as a Go replacement for Python's `setDefault`: https://docs.python.org/2/library/stdtypes.html#dict.setdefault
-//Basically, if key is in the dictionary, return its value. If not, insert key with a value of default and return default. default defaults to None.
+// SetDefaultStringFloat64 is a util function that serves as a Go replacement for Python's `setDefault`: https://docs.python.org/2/library/stdtypes.html#dict.setdefault
+// Basically, if key is in the dictionary, return its value. If not, insert key with a value of default and return default. default defaults to None.
 func SetDefaultStringFloat64(h map[string]float64, k string, v float64) (set bool, r float64) {
 	if r, set = h[k]; !set {
 		h[k] = v
@@ -144,25 +144,25 @@ func SetDefaultStringFloat64(h map[string]float64, k string, v float64) (set boo
 	return
 }
 
-//RunRakeI18N returns a slice of key-value pairs (PairList) of a keyword and its score after running the RAKE algorithm on a given text
+// RunRakeI18N returns a slice of key-value pairs (PairList) of a keyword and its score after running the RAKE algorithm on a given text
 func RunRakeI18N(text string, stopWords []string) PairList {
-	//Split sentences based on punctuation
+	// Split sentences based on punctuation
 	sentenceList := SplitSentences(text)
 
-	//Build stop-word regex pattern
-	words := StopWordsSlice
+	// Build stop-word regex pattern
+	words := RUStopWordsSlice
 	if len(stopWords) > 0 {
 		words = stopWords
 	}
 	stopWordPattern := RegexStopWords(words)
 
-	//Build phrase list
+	// Build phrase list
 	phraseList := GenerateCandidateKeywords(sentenceList, stopWordPattern)
 
-	//Build word scores
+	// Build word scores
 	wordScores := CalculateWordScores(phraseList)
 
-	//Build keyword candidates and sort it (see sort.go)
+	// Build keyword candidates and sort it (see sort.go)
 	keywordCandidates := GenerateCandidateKeywordScores(phraseList, wordScores)
 	sorted := reverseSortByValue(keywordCandidates)
 	return sorted
